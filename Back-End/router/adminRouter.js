@@ -1,0 +1,10 @@
+const express = require('express')
+const router = express.Router()
+const adminController = require('../controller/adminController')
+const verifyToken = require('../Middleware/verifyToken')
+router.post('/login',adminController.AdminLoginPage)
+router.get('/users',verifyToken,adminController.fetchingUserData)
+router.delete('/users/:id',verifyToken,adminController.deleteuser)
+router.put('/users/:id',verifyToken,adminController.userUpdate)
+router.post('/newUsers',adminController.addNewUser)
+module.exports = router
