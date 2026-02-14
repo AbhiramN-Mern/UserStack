@@ -33,10 +33,15 @@ const Dashboard = () => {
     fetchUser();
   }, []);
 
-  const fetchUser = () => {
+  const fetchUser = (searchQuery = "") => {
     const token = localStorage.getItem("token");
+    const params = new URLSearchParams();
+    if (searchQuery) {
+      params.append("search", searchQuery);
+    }
+    
     api
-      .get("/admin/users", {
+      .get(`/admin/users?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -140,12 +145,12 @@ const Dashboard = () => {
     }
   };
 
-  const filterUserData = userDatas.filter((user) => {
-    return (
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    fetchUser(query);
+  };
+
   return (
     <>
       <div className="admin-dashboard">
@@ -160,7 +165,7 @@ const Dashboard = () => {
                     type="text"
                     placeholder="Search users..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchChange}
                   />
                   <button className="search-button">🔍</button>
                 </div>
@@ -180,7 +185,7 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(searchQuery ? filterUserData : userDatas).map(
+                    {userDatas.map(
                       (users, index) => (
                         <tr key={index}>
                           <td>

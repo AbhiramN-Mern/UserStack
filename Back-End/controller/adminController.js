@@ -27,7 +27,20 @@ const AdminLoginPage = async(req,res)=>{
 }
 const fetchingUserData = async(req,res)=>{
     try {
-        const userData = await User.find({})
+        const {search} = req.query
+        let userData
+        
+        if(search){
+            userData = await User.find({
+                $or:[
+                    {name: {$regex: search, $options: 'i'}},
+                    {email: {$regex: search, $options: 'i'}}
+                ]
+            })
+        } else {
+            userData = await User.find({})
+        }
+        
         return res.status(200).json({msg:'user data fetched successfully',userData})
     } catch (error) {
         console.log('user data fetching error',error)
